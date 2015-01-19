@@ -1,0 +1,13 @@
+source 'https://rubygems.org'
+
+gem 'kwalify'
+gem 'icalendar'
+gem 'nokogiri'
+gem 'slop', '~>3'
+gem 'geocoder'
+gem 'nearest_time_zone'
+gem 'pry'
+gem 'json'
+gem 'tzinfo'
+gem 'tzinfo-data'
+gem 'word_wrap'
