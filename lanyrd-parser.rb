@@ -12,14 +12,16 @@ require 'word_wrap'
 
 ### Handle command-line options
 
-opts = Slop.parse(help: true, ignore_case: true) do |o|
-  o.string '-l', '--location', "Conference location (also attempts auto-timezone lookup)"
-  o.string '-t', '--timezone', "Time Zone", default: "GMT"
-  o.integer '-y', '--year', "Year", default: Time.now.year
-  o.on '-h', '--help' do
-    puts o
-    exit
-  end
+opts = Slop.parse!(help: true, ignore_case: true) do
+  on 'l', 'location', "Conference location (also attempts auto-timezone lookup)", argument: :optional
+  on 't', 'timezone', "Time Zone", argument: :optional, default: "GMT"
+  on 'y', 'year', "Year", argument: :optional, default: Time.now.year
+end
+
+if opts
+  p opts
+  p otps.arguments
+  exit
 end
 
 
