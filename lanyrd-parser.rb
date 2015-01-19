@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 require 'nokogiri'
-require 'open-uri'
+require 'open-uri/cached'
 require 'yaml'
 require 'slop'
 require 'geocoder'
@@ -18,19 +18,22 @@ opts = Slop.parse!(help: true, ignore_case: true) do
   on 'y', 'year', "Year", argument: :optional, default: Time.now.year
 end
 
-if opts
-  p opts
-  p otps.arguments
-  exit
+
+### Load info from Lanyrd
+
+if ARGV
+  url = "http://lanyrd.com/#{opts[:year]}/#{ARGV.first}/"
+  intro = Nokogiri::HTML(open(url).read.gsub(/\n/, ' ').squeeze(' '))
+  schedule = Nokogiri::HTML(open("#{url}schedule/").read.gsub(/\n/, ' ').squeeze(' '))
+else
+  exit false
 end
 
 
 ### Intro page
 
-intro = Nokogiri::HTML(open('infra-intro.html').read.gsub(/\n/, ' ').squeeze(' '))
-
 summary = intro.css('#event-description')
-summary = summary.text.split(' (hide)').first.strip if summary
+summary = summary.text.split(' (hide)').first.strip unless summary.text.empty?
 
 tagline = intro.css('.tagline')/
 tagline = tagline.text if tagline
@@ -39,8 +42,6 @@ tagline = tagline.text if tagline
 ### Schedule page
 
 # Location
-
-schedule = Nokogiri::HTML(open('infra.html').read.gsub(/\n/, ' ').squeeze(' '))
 
 place = schedule.css('.location a')
 
@@ -64,23 +65,24 @@ end
 events = []
 
 schedule.css('.schedule-item').each do |item|
-  # Grab start and end times
-  dtstart = item.css('.dtstart .value-title').attr('title').to_s.split('+').first.tr('T', ' ')
-  dtend = item.css('.dtend .value-title').attr('title').to_s.split('+').first.tr('T', ' ')
+  begin
+    # Grab start and end times
+    dtstart = item.css('.dtstart .value-title').attr('title').to_s.split('+').first.tr('T', ' ')
+    dtend = item.css('.dtend .value-title').attr('title').to_s.split('+').first.tr('T', ' ')
+    # Shorten timezone to abbreviation (w/ DST-awareness)
+    tz = TZInfo::Timezone.get(timezone).period_for_local(Time.parse(dtstart)).zone_identifier.to_s
 
-  # Shorten timezone to abbreviation (w/ DST-awareness)
-  tz = TZInfo::Timezone.get(timezone).period_for_local(Time.parse(dtstart)).zone_identifier.to_s
-
-  # Form & add individual event
-  event = {
-    "title" => item.css('h2 a').text.strip,
-    "speaker" => item.css('.session-speakers a').text.strip,
-    "start" => Time.parse(dtstart).strftime('%F %R') + " #{tz}",
-    "end" => Time.parse(dtend).strftime('%F %R') + " #{tz}",
-    #"end" => item.css('.dtend .value-title').attr('title'),
-    "description" => item.css('.desc').text.wrap(72)#.gsub(/\n/, ''),
-  }
-  events.push event
+    # Form & add individual event
+    event = {
+      "title" => item.css('h2 a').text.strip,
+      "speaker" => item.css('.session-speakers a').text.strip,
+      "start" => Time.parse(dtstart).strftime('%F %R') + " #{tz}",
+      "end" => Time.parse(dtend).strftime('%F %R') + " #{tz}",
+      "description" => item.css('.desc').text.wrap(72)#.gsub(/\n/, ''),
+    }
+    events.push event
+  rescue
+  end
 end
 
 
@@ -90,7 +92,7 @@ conference = {
   "title" => schedule.css('.content h1').first.text.strip.gsub(/schedule$/, ''),
   "location" => location,
   "timezone" => timezone,
-  "summary" => (summary || tagline || '').wrap(72),
+  "summary" => (summary.to_s || tagline.to_s || '').wrap(72),
   "events" => events
 }
 
