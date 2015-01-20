@@ -78,7 +78,7 @@ schedule.css('.schedule-item').each do |item|
       "speaker" => item.css('.session-speakers a').text.strip,
       "start" => Time.parse(dtstart).strftime('%F %R') + " #{tz}",
       "end" => Time.parse(dtend).strftime('%F %R') + " #{tz}",
-      "description" => item.css('.desc').text.wrap(72)#.gsub(/\n/, ''),
+      "description" => item.css('.desc').text.strip.wrap(72)
     }
     events.push event
   rescue
@@ -89,11 +89,11 @@ end
 ### Put it all together
 
 conference = {
-  "title" => schedule.css('.content h1').first.text.strip.gsub(/schedule$/, ''),
+  "name" => schedule.css('.content h1').first.text.strip.gsub(/schedule$/, ''),
   "location" => location,
   "timezone" => timezone,
-  "summary" => (summary.to_s || tagline.to_s || '').wrap(72),
-  "events" => events
+  "description" => (summary.to_s || tagline.to_s || '').strip.wrap(72),
+  "talks" => events
 }
 
 puts conference.to_yaml(separator: nil, block: true, fold: true).gsub(/^(\s*- [\s\w]+:)/, "\n\\1").gsub(/^---$/, '').gsub(/: \|-/, ': |').strip
