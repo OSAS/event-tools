@@ -16,6 +16,7 @@ GEM
       require_all
     nokogiri (1.6.5)
       mini_portile (~> 0.6.0)
+    open-uri-cached (0.0.5)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -39,6 +40,7 @@ DEPENDENCIES
   kwalify
   nearest_time_zone
   nokogiri
+  open-uri-cached
   pry
   slop (~> 3)
   tzinfo
