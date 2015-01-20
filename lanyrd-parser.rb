@@ -13,19 +13,22 @@ require 'word_wrap'
 ### Handle command-line options
 
 opts = Slop.parse!(help: true, ignore_case: true) do
+  banner "Usage: #{__FILE__} [options] <conference>"
   on 'l', 'location', "Conference location (also attempts auto-timezone lookup)", argument: :optional
-  on 't', 'timezone', "Time Zone", argument: :optional, default: "GMT"
+  #on 't', 'timezone', "Timezone override", argument: :optional, default: "GMT"
   on 'y', 'year', "Year", argument: :optional, default: Time.now.year
 end
 
 
 ### Load info from Lanyrd
 
-if ARGV
+if ARGV.first
   url = "http://lanyrd.com/#{opts[:year]}/#{ARGV.first}/"
   intro = Nokogiri::HTML(open(url).read.gsub(/\n/, ' ').squeeze(' '))
   schedule = Nokogiri::HTML(open("#{url}schedule/").read.gsub(/\n/, ' ').squeeze(' '))
 else
+  puts "Error: Conference short-name must be included.\n\n"
+  puts opts
   exit false
 end
 
