@@ -23,7 +23,7 @@ Usage: ./lanyrd-parser.rb [options] <conference>
     -l, --location      Conference location (also attempts auto-timezone lookup)
     -y, --year          Year (default: 2015)
     -h, --help          Display this help message.
-        ```
+```
 
 You must specify the conference short name (slug). This is found in Lanyrd
 URLs, directly after the year.
