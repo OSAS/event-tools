@@ -5,10 +5,10 @@ with [rh-events](https://github.com/OSAS/rh-events/)-style YAML-based events.
 
 Currently, the following are included:
 
-* lanyrd-parser.rb: for parsing Lanyrd events and displaying a mostly-usable
+* `lanyrd-parser.rb`: for parsing Lanyrd events and displaying a mostly-usable
   YAML representation (which should probably be mildly edited before
   submitting to )
-* ics-parser.rb: .ics importer (work-in-progress)
+* `ics-parser.rb`: .ics (iCalendar/vCalendar) importer (work-in-progress)
 
 ## Usage
 
