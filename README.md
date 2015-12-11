@@ -1,7 +1,7 @@
 # event-tools
 
 Contained in this repository are a few utilities that make it easier to work
-with rh-event-style YAML-based events.
+with [rh-events](https://github.com/OSAS/rh-events/)-style YAML-based events.
 
 Currently, the following are included:
 
