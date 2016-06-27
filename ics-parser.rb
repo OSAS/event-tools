@@ -6,11 +6,21 @@ Bundler.setup
 require 'icalendar'
 require 'open-uri'
 require 'yaml'
+require 'slop'
 require 'word_wrap'
 
-ics = open('infra-at-scale-schedule.ics').read
+opts = Slop.parse!(help: true, ignore_case: true) do
+  banner "Usage: #{__FILE__} [options] <ics file>"
+end
 
-cal = Icalendar.parse(ics).first
+if ARGV.first
+  ics = open(ARGV.first).read
+  cal = Icalendar.parse(ics).first
+else
+  puts "Error: .ics file must be specified.\n\n"
+  puts opts
+  exit false
+end
 
 events = []
 
