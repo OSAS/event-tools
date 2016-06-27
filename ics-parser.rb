@@ -1,5 +1,8 @@
 #!/usr/bin/ruby
 
+require 'bundler'
+Bundler.setup
+
 require 'icalendar'
 require 'open-uri'
 require 'yaml'

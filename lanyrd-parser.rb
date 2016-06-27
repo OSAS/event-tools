@@ -1,5 +1,8 @@
 #!/usr/bin/ruby
 
+require 'bundler'
+Bundler.setup
+
 require 'nokogiri'
 require 'open-uri/cached'
 require 'yaml'
